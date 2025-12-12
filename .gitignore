@@ -69,7 +69,6 @@ dmypy.json
 
 # Environments
 .env
-.env.*
 .envrc
 
 # IDEs and editors
