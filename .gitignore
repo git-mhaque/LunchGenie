@@ -82,4 +82,4 @@ dmypy.json
 Thumbs.db
 
 # Requirements files
-requirements*.txt
+#requirements*.txt

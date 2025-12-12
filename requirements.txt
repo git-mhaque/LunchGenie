@@ -1,0 +1,6 @@
+python-dotenv>=1.0.0
+openai>=1.0.0
+langchain>=0.1.0
+langchain-openai>=0.0.8
+requests>=2.28.0
+urllib3<2  # For compatibility with Python/LibreSSL on macOS, see https://github.com/urllib3/urllib3/issues/3020

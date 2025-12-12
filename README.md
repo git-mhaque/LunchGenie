@@ -14,9 +14,12 @@ It finds local places for team lunch based on cuisine, ratings, proximity, revie
 ## Setup
 
 1. Clone this repository
-2. Create a Python virtual environment:
+2. Create and activate a Python virtual environment:
     ```
     python3 -m venv venv
+    ```
+
+    ```
     source venv/bin/activate
     ```
 3. Install dependencies:
@@ -31,9 +34,13 @@ It finds local places for team lunch based on cuisine, ratings, proximity, revie
 
    **Required:**
     - `OPENAI_API_KEY`: Your OpenAI API key (see below)
-   **Optional depending on provider:**
+
+   **Restaurant Data Providers:**
     - `YELP_API_KEY`: For Yelp restaurant search
     - `GOOGLE_PLACES_API_KEY`: For Google Places restaurant search
+
+   **Default Location (optional):**
+    - `DEFAULT_LATITUDE`, `DEFAULT_LONGITUDE`: Set these to control the geographic center point for all searches (e.g., your office or city center). If not specified by the user, these defaults are used for location-based recommendations.
 
 ## Obtaining an OpenAI API Key
 
@@ -92,6 +99,60 @@ To run LunchGenie and get lunch recommendations:
     ```
 
    This is the recommended way to run LunchGenie. It will search for suitable restaurants and print the top recommendations based on your criteria.
+
+Sample output: 
+```
+Found 17 high-rated options. Analyzing reviews...
+Analyzing reviews for Cha Ching (5).
+Analyzing reviews for Tian38 (5).
+Analyzing reviews for Bamboo House Chinese Restaurant Melbourne (5).
+Analyzing reviews for Miss Mi Restaurant & Bar (5).
+Analyzing reviews for Nelayan Restaurant (5).
+Analyzing reviews for Jom (5).
+Analyzing reviews for Blue Chillies (5).
+Analyzing reviews for Tazio (5).
+Analyzing reviews for Nan Yang Express Chinatown (5).
+Analyzing reviews for Ho Liao Melbourne (5).
+Analyzing reviews for Lim Kopi (5).
+Analyzing reviews for Mint & Co. (5).
+Analyzing reviews for Pondok Rempah (5).
+Analyzing reviews for Achelya Restaurant, Cafe and Bar. (5).
+Analyzing reviews for Kedai Satay in King St (5).
+Analyzing reviews for ILoveIstanbul (5).
+Analyzing reviews for Kan Eang by Thai Culinary (5).
+
+Recommended team lunch places (clean reviews, high rating, short walk):
+
+- Jom (restaurant, point_of_interest, food, establishment)
+  Rating: 4.9 from 857 reviews; 448m from point.
+  Address: 378 Lonsdale St, Melbourne VIC 3000, Australia
+  More: https://maps.google.com/?cid=2882563165016363395
+  Review summary: Overall, the reviews do not mention any food safety, hygiene, or customer mistreatment issues. The restaurant seems safe based on the feedback provided.
+
+- Cha Ching (restaurant, point_of_interest, food, establishment)
+  Rating: 4.7 from 2164 reviews; 196m from point.
+  Address: 348 Flinders Ln, Melbourne VIC 3000, Australia
+  More: https://maps.google.com/?cid=15116040731015528848
+  Review summary: Overall, the reviews do not mention any food safety, hygiene, or customer mistreatment issues. The restaurant seems safe based on the feedback provided.
+
+- Blue Chillies (restaurant, point_of_interest, food, establishment)
+  Rating: 4.7 from 396 reviews; 2186m from point.
+  Address: 182 Brunswick St, Fitzroy VIC 3065, Australia
+  More: https://maps.google.com/?cid=676553577094659346
+  Review summary: It seems safe. Customers had positive experiences with the food, service, and atmosphere of the restaurant.
+
+- Mint & Co. (restaurant, point_of_interest, food, establishment)
+  Rating: 4.7 from 7658 reviews; 1985m from point.
+  Address: 62 University St, Carlton VIC 3053, Australia
+  More: https://maps.google.com/?cid=18180350769342393265
+  Review summary: It seems safe based on the customer reviews. The restaurant received positive feedback on the food quality, service, and atmosphere.
+
+- Kan Eang by Thai Culinary (restaurant, point_of_interest, food, establishment)
+  Rating: 4.7 from 1534 reviews; 275m from point.
+  Address: 306 Flinders Ln, Melbourne VIC 3000, Australia
+  More: https://maps.google.com/?cid=11719064961553893173
+  Review summary: Overall, the reviews are very positive with customers praising the food, service, and ambiance of the restaurant. No red flags related to food safety, hygiene, or customer mistreatment were mentioned.
+```
 
 To test LLM connectivity only (diagnostic), use:
 ```
