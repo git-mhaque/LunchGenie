@@ -54,10 +54,15 @@ LunchGenie uses OpenAI's GPT-3.5 or GPT-4 for review and recommendation logic. Y
 The key is required even if you only use Google or Yelp for place data, since all intelligent ranking and review analysis uses the LLM.
 
 
-## Development structure
+## Development structure & Architecture
 
-- `lunchgenie/` — Core package: agent, orchestrator, config.
-- `tools/` — Modular plugin data-adapters.
+- `lunchgenie/agent.py` — Pure coordinator/orchestrator. Defines the `Agent` class and business logic, delegating to helpers.
+- `lunchgenie/review_fetcher.py` — Handles API review retrieval and enrichment.
+- `lunchgenie/result_formatter.py` — Prints and formats recommendations/results for CLI and UI.
+- `lunchgenie/location_utils.py` — Centralizes location determination strategy.
+- `lunchgenie/cli.py` — Command-line interface logic.
+- `lunchgenie/restaurant_provider/` — Plugin-based abstractions for restaurant data providers (Yelp, Google, etc).
+- `tools/` — Lower-level plugin data-adapters.
 - `tests/` — Test suite.
 - `configs/` — Configuration and reference files.
 
@@ -92,71 +97,70 @@ Be sure to set the appropriate variable(s) in your `.env` file. If both are set,
 To run LunchGenie and get lunch recommendations:
 
 1. Make sure your Python virtual environment is active and all dependencies are installed.
-2. Run the app from the root of the project using Python's module syntax:
+2. Run the app from the root directory using:
 
     ```
-    python -m lunchgenie.agent recommend
+    python -m lunchgenie.cli recommend
     ```
 
-   This is the recommended way to run LunchGenie. It will search for suitable restaurants and print the top recommendations based on your criteria.
+   This is the recommended way to run LunchGenie. The CLI will show real-time progress, such as the number of restaurants found and review analysis for each result, and then print your top recommendations.
 
-Sample output: 
+Sample output (progress messages included): 
 ```
-Found 17 high-rated options. Analyzing reviews...
-Analyzing reviews for Cha Ching (5).
-Analyzing reviews for Tian38 (5).
-Analyzing reviews for Bamboo House Chinese Restaurant Melbourne (5).
-Analyzing reviews for Miss Mi Restaurant & Bar (5).
-Analyzing reviews for Nelayan Restaurant (5).
-Analyzing reviews for Jom (5).
-Analyzing reviews for Blue Chillies (5).
-Analyzing reviews for Tazio (5).
-Analyzing reviews for Nan Yang Express Chinatown (5).
-Analyzing reviews for Ho Liao Melbourne (5).
-Analyzing reviews for Lim Kopi (5).
-Analyzing reviews for Mint & Co. (5).
-Analyzing reviews for Pondok Rempah (5).
-Analyzing reviews for Achelya Restaurant, Cafe and Bar. (5).
-Analyzing reviews for Kedai Satay in King St (5).
-Analyzing reviews for ILoveIstanbul (5).
-Analyzing reviews for Kan Eang by Thai Culinary (5).
+Found 16 high-rated options. Analyzing reviews...
+Analyzing reviews for Tian38 ...
+Analyzing reviews for Lucy Liu Kitchen and Bar ...
+Analyzing reviews for Jom ...
+Analyzing reviews for Cha Ching ...
+Analyzing reviews for Bamboo House Chinese Restaurant Melbourne ...
+Analyzing reviews for Blue Chillies ...
+Analyzing reviews for Nan Yang Express Chinatown ...
+Analyzing reviews for ccwok ...
+Analyzing reviews for Melba Restaurant ...
+Analyzing reviews for Chin Chin ...
+Analyzing reviews for Mint & Co. ...
+Analyzing reviews for Tabouli ...
+Analyzing reviews for Kan Eang by Thai Culinary ...
+Analyzing reviews for Leyalina ...
+Analyzing reviews for Garden State Hotel ...
+Analyzing reviews for Tonka ...
 
 Recommended team lunch places (clean reviews, high rating, short walk):
 
-- Jom (restaurant, point_of_interest, food, establishment)
-  Rating: 4.9 from 857 reviews; 448m from point.
+- Jom (restaurant, food, point_of_interest, establishment)
+  Rating: 4.9 from 906 reviews; 448m from point.
   Address: 378 Lonsdale St, Melbourne VIC 3000, Australia
   More: https://maps.google.com/?cid=2882563165016363395
-  Review summary: Overall, the reviews do not mention any food safety, hygiene, or customer mistreatment issues. The restaurant seems safe based on the feedback provided.
+  Review summary: Overall, the restaurant seems safe based on customer reviews. There are no mentions of food safety, hygiene issues, or mistreatment of customers. The food is generally well-received with some minor suggestions for improvement.
 
-- Cha Ching (restaurant, point_of_interest, food, establishment)
-  Rating: 4.7 from 2164 reviews; 196m from point.
+- Cha Ching (restaurant, food, point_of_interest, establishment)
+  Rating: 4.7 from 2197 reviews; 196m from point.
   Address: 348 Flinders Ln, Melbourne VIC 3000, Australia
   More: https://maps.google.com/?cid=15116040731015528848
-  Review summary: Overall, the reviews do not mention any food safety, hygiene, or customer mistreatment issues. The restaurant seems safe based on the feedback provided.
+  Review summary: Overall, the reviews indicate that the restaurant seems safe with no mentions of food safety, hygiene, rats/insects, food poisoning, severe unhygienic conditions, or serious customer mistreatment. Customers generally enjoyed the food, service, and atmosphere.
 
-- Blue Chillies (restaurant, point_of_interest, food, establishment)
-  Rating: 4.7 from 396 reviews; 2186m from point.
+- Blue Chillies (restaurant, food, point_of_interest, establishment)
+  Rating: 4.7 from 398 reviews; 2186m from point.
   Address: 182 Brunswick St, Fitzroy VIC 3065, Australia
   More: https://maps.google.com/?cid=676553577094659346
-  Review summary: It seems safe. Customers had positive experiences with the food, service, and atmosphere of the restaurant.
+  Review summary: There are no mentions of food safety, hygiene, rats/insects, food poisoning, severe unhygienic conditions, or serious customer mistreatment in the reviews. The restaurant seems safe based on customer feedback.
 
-- Mint & Co. (restaurant, point_of_interest, food, establishment)
-  Rating: 4.7 from 7658 reviews; 1985m from point.
+- Mint & Co. (restaurant, food, point_of_interest, establishment)
+  Rating: 4.7 from 7781 reviews; 1985m from point.
   Address: 62 University St, Carlton VIC 3053, Australia
   More: https://maps.google.com/?cid=18180350769342393265
-  Review summary: It seems safe based on the customer reviews. The restaurant received positive feedback on the food quality, service, and atmosphere.
+  Review summary: Overall, the reviews do not mention any food safety or hygiene concerns. The restaurant seems safe based on customer feedback.
 
-- Kan Eang by Thai Culinary (restaurant, point_of_interest, food, establishment)
-  Rating: 4.7 from 1534 reviews; 275m from point.
+- Kan Eang by Thai Culinary (restaurant, food, point_of_interest, establishment)
+  Rating: 4.7 from 1555 reviews; 275m from point.
   Address: 306 Flinders Ln, Melbourne VIC 3000, Australia
   More: https://maps.google.com/?cid=11719064961553893173
-  Review summary: Overall, the reviews are very positive with customers praising the food, service, and ambiance of the restaurant. No red flags related to food safety, hygiene, or customer mistreatment were mentioned.
+  Review summary: All customer reviews are positive and do not mention any food safety, hygiene, or customer mistreatment issues. The restaurant seems safe based on the reviews.
 ```
 
 To test LLM connectivity only (diagnostic), use:
 ```
-python -m lunchgenie.agent
+python -m lunchgenie.cli
 ```
 
 ## Future Enhancements
